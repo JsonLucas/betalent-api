@@ -1,0 +1,905 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: Documentação da API com endpoints e validações.
+servers:
+  - url: http://localhost:3333/api/docs
+    description: Servidor Local
+paths:
+  users/signup:
+    post:
+      summary: "Create a new user"
+      operationId: "signup"
+      tags:
+        - "User"
+      requestBody:
+        description: "User data for signup"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                birthDate:
+                  type: string
+                  format: date
+                role:
+                  type: string
+                  enum: [admin, user]
+                cpf:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+            required:
+              - name
+              - birthDate
+              - role
+              - cpf
+              - email
+              - password
+      responses:
+        201:
+          description: "Successfully created user"
+        409:
+          description: "This user is already in use"
+        500:
+          description: "Unexpected error occurred"
+
+  /users/login:
+    post:
+      summary: "Login and get an authentication token"
+      operationId: "login"
+      tags:
+        - "User"
+      requestBody:
+        description: "User credentials for login"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+            required:
+              - email
+              - password
+      responses:
+        200:
+          description: "Successfully logged in and returned token"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        401:
+          description: "Invalid credentials"
+        500:
+          description: "Unexpected error occurred"
+
+  /users:
+    get:
+      summary: "Get the authenticated users data"
+      operationId: "show"
+      tags:
+        - "User"
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: "Successfully retrieved user data"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  cpf:
+                    type: string
+                  birthDate:
+                    type: string
+                    format: date
+                  addresses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        street:
+                          type: string
+                        city:
+                          type: string
+                        state:
+                          type: string
+                        zipCode:
+                          type: string
+                        country:
+                          type: string
+        401:
+          description: "Unauthorized"
+        404:
+          description: "User not found"
+
+  /users/all:
+    get:
+      summary: "Get all users (admin only)"
+      operationId: "list"
+      tags:
+        - "User"
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: "Successfully retrieved users"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    cpf:
+                      type: string
+                    birthDate:
+                      type: string
+                      format: date
+                    addresses:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          street:
+                            type: string
+                          city:
+                            type: string
+                          state:
+                            type: string
+                          zipCode:
+                            type: string
+                          country:
+                            type: string
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden - Admin access required"
+        500:
+          description: "Unexpected error occurred"
+
+  /users/destroy/{id}:
+    delete:
+      summary: "Delete a user (admin only)"
+      operationId: "destroy"
+      tags:
+        - "User"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID of the user to be deleted"
+          schema:
+            type: integer
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: "Successfully deleted user"
+        400:
+          description: "Invalid operation"
+        404:
+          description: "User not found"
+        403:
+          description: "Forbidden - Admin access required"
+        500:
+          description: "Unexpected error occurred"
+
+  /users/address:
+    post:
+      summary: "Create a new address for the authenticated user"
+      operationId: "newAddress"
+      tags:
+        - "User"
+      security:
+        - api_key: []
+      requestBody:
+        description: "Address data"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                street:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                zipCode:
+                  type: string
+                country:
+                  type: string
+              required:
+                - street
+                - city
+                - state
+                - zipCode
+                - country
+      responses:
+        201:
+          description: "Successfully created address"
+        400:
+          description: "Invalid data provided"
+        500:
+          description: "Unexpected error occurred"
+
+  /users/address/{id}:
+    put:
+      summary: "Update an address for the authenticated user"
+      operationId: "updateAddress"
+      tags:
+        - "User"
+      security:
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID of the address to be updated"
+          schema:
+            type: integer
+      requestBody:
+        description: "Updated address data"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                street:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                zipCode:
+                  type: string
+                country:
+                  type: string
+              required:
+                - street
+                - city
+                - state
+                - zipCode
+                - country
+      responses:
+        200:
+          description: "Successfully updated address"
+        404:
+          description: "Address not found"
+        403:
+          description: "Forbidden - You cannot update this address"
+        500:
+          description: "Unexpected error occurred"
+
+    delete:
+      summary: "Delete an address for the authenticated user"
+      operationId: "deleteAddress"
+      tags:
+        - "User"
+      security:
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID of the address to be deleted"
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "Successfully deleted address"
+        404:
+          description: "Address not found"
+        500:
+            description: "Unexpected error occurred"
+
+  /products:
+    get:
+      summary: Lista todos os produtos
+      description: Retorna uma lista de produtos com base no papel do usuário.
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      responses:
+        200:
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+                      nullable: true
+                    price:
+                      type: number
+                      format: float
+                    stock:
+                      type: integer
+                    deactivated:
+                      type: boolean
+                      nullable: true
+        401:
+          description: Não autorizado
+        403:
+          description: Acesso proibido
+    
+    post:
+      summary: Cria um novo produto
+      description: Cria um novo produto na base de dados.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - stock
+                - price
+                - isPerishable
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                  description: Nome do produto (mínimo 3 caracteres).
+                description:
+                  type: string
+                  nullable: true
+                  description: Descrição opcional do produto.
+                stock:
+                  type: integer
+                  minimum: 1
+                  description: Quantidade disponível em estoque (mínimo 1).
+                price:
+                  type: number
+                  format: float
+                  minimum: 0.01
+                  description: Preço do produto (mínimo 0.01).
+                isPerishable:
+                  type: boolean
+                  description: Indica se o produto é perecível (true/false).
+                expirationDate:
+                  type: string
+                  format: date
+                  nullable: true
+                  description: >
+                    Data de validade do produto (obrigatória se `isPerishable` for `true`).
+                    Deve ser uma data futura.
+                batch:
+                  type: string
+                  nullable: true
+                  description: >
+                    Lote do produto (obrigatório se `isPerishable` for `true`).
+      responses:
+        201:
+          description: Produto criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID do produto criado.
+                  name:
+                    type: string
+                  stock:
+                    type: integer
+                  price:
+                    type: number
+                    format: float
+                  isPerishable:
+                    type: boolean
+                  expirationDate:
+                    type: string
+                    format: date
+                    nullable: true
+                  batch:
+                    type: string
+                    nullable: true
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        400:
+          description: Solicitação inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Detalhes do erro.
+        401:
+          description: Não autorizado
+        403:
+          description: Acesso proibido
+  /products/{id}:
+    get:
+      summary: Exibe um produto específico
+      description: Retorna detalhes de um produto, com base no ID.
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do produto
+      responses:
+        200:
+          description: Detalhes do produto
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                    nullable: true
+                  price:
+                    type: number
+                    format: float
+                  stock:
+                    type: integer
+        404:
+          description: Produto não encontrado ou foi excluído
+        401:
+          description: Não autorizado
+        403:
+          description: Acesso proibido
+    put:
+      summary: Atualiza um produto existente
+      description: Atualiza os dados de um produto existente, com base no ID.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do produto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nome do produto (mínimo de 3 caracteres)
+                  minLength: 3
+                description:
+                  type: string
+                  description: Descrição do produto
+                  nullable: true
+                stock:
+                  type: integer
+                  description: Quantidade em estoque (mínimo de 1)
+                  minimum: 1
+                price:
+                  type: number
+                  format: float
+                  description: Preço do produto (mínimo de 0.01)
+                  minimum: 0.01
+                isPerishable:
+                  type: boolean
+                  description: Indica se o produto é perecível
+                expirationDate:
+                  type: string
+                  format: date-time
+                  description: Data de validade do produto (obrigatória para perecíveis)
+                  nullable: true
+                batch:
+                  type: string
+                  description: Lote do produto (obrigatório para perecíveis)
+                  nullable: true
+              required:
+                - name
+                - stock
+                - price
+                - isPerishable
+              additionalProperties: false
+              allOf:
+                - if:
+                    properties:
+                      isPerishable:
+                        const: true
+                  then:
+                    required:
+                      - expirationDate
+                      - batch
+                    properties:
+                      expirationDate:
+                        nullable: false
+                      batch:
+                        nullable: false
+                - if:
+                    properties:
+                      isPerishable:
+                        const: false
+                  then:
+                    properties:
+                      expirationDate:
+                        not:
+                          nullable: true
+                      batch:
+                        not:
+                          nullable: true
+      responses:
+        200:
+          description: Produto atualizado com sucesso
+        400:
+          description: Solicitação inválida
+        404:
+          description: Produto não encontrado ou foi excluído
+        401:
+          description: Não autorizado
+        403:
+          description: Acesso proibido
+    patch:
+      summary: Exclui logicamente um produto
+      description: Marca um produto como excluído (não mais disponível) sem removê-lo permanentemente.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do produto
+      responses:
+        200:
+          description: Produto excluído logicamente
+        404:
+          description: Produto não encontrado
+        401:
+          description: Não autorizado
+        403:
+          description: Acesso proibido
+  /products/reactivate/{id}:
+    patch:
+      summary: Reativa um produto excluído logicamente
+      description: Reativa um produto que foi excluído logicamente.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do produto
+      responses:
+        200:
+          description: Produto reativado com sucesso
+        404:
+          description: Produto não encontrado
+        401:
+          description: Não autorizado
+        403:
+          description: Acesso proibido
+
+  /sales/{productId}:
+    post:
+      summary: Criar uma nova venda
+      description: Cria uma venda associada a um produto específico.
+      operationId: createSale
+      security:
+        - bearerAuth: []
+      tags:
+        - Sales
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: integer
+            description: ID do produto que será vendido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  description: Quantidade do produto que está sendo vendido
+                  example: 2
+      responses:
+        201:
+          description: Venda criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Sale was successfuly created."
+        400:
+          description: Estoque insuficiente ou dados inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Insufficient stock."
+        404:
+          description: Produto não encontrado ou não disponível
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product not found."
+
+  /sales/client:
+    get:
+      summary: Listar as vendas do cliente
+      description: Retorna uma lista das vendas feitas pelo cliente autenticado.
+      operationId: getSales
+      security:
+        - bearerAuth: []
+      tags:
+        - Sales
+      parameters:
+        - in: query
+          name: month
+          schema:
+            type: integer
+          description: Filtro para o mês das vendas
+        - in: query
+          name: year
+          schema:
+            type: integer
+          description: Filtro para o ano das vendas
+      responses:
+        200:
+          description: Lista de vendas do cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    quantity:
+                      type: integer
+                    unitPrice:
+                      type: number
+                      format: float
+                    total:
+                      type: number
+                      format: float
+                    createdAt:
+                      type: string
+                      format: date-time
+                    product:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        price:
+                          type: number
+                          format: float
+                        stock:
+                          type: integer
+        401:
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /sales/{id}:
+    get:
+      summary: Detalhar uma venda específica
+      description: Retorna os detalhes de uma venda feita pelo cliente autenticado.
+      operationId: getSaleById
+      security:
+        - bearerAuth: []
+      tags:
+        - Sales
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID da venda a ser retornada
+      responses:
+        200:
+          description: Detalhes da venda
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  quantity:
+                    type: integer
+                  unitPrice:
+                    type: number
+                    format: float
+                  total:
+                    type: number
+                    format: float
+                  createdAt:
+                    type: string
+                    format: date-time
+                  product:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      price:
+                        type: number
+                        format: float
+                      stock:
+                        type: integer
+        404:
+          description: Venda não encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Sale not found."
+        401:
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+
+components:
+  securitySchemes:
+    authentication:
+      type: Bearer
+      in: header
+      name: Authorization
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        cpf:
+          type: string
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipCode:
+          type: string
+        country:
+          type: string
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          optional: true
+        price:
+          type: float
+        isPerishable: 
+          type: boolean
+          defaultValue: true
+        expirationDate:
+          type: Date
+          optional: true
+          depends_on: ${isPerishable}
+        batch:
+          type: string
+          optional: true
+          depends_on: ${isPerishable}
+        isDeleted:
+          type: boolean
+          defaultValue: false
+        stock:
+          type: integer
+    Sale:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        productId:
+          type: integer
+        quantity:
+          type: integer
+        unityPrice:
+          type: float
+        totalPrice:
+          type: float
