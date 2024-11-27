@@ -4,20 +4,20 @@
 Bem-vindo ao **EasyBuy**! Esta aplicação é um **sistema de gestão de vendas** desenvolvido com **Adonis.js**, que permite o registro e controle de clientes, produtos e vendas em uma plataforma de _e-commerce_. O sistema utiliza autenticação baseada em **JWT (JSON Web Tokens)** para garantir a segurança e controle de acesso dos usuários, permitindo que **apenas usuários autenticados** possam interagir com os dados do sistema.
 
 ## Funcionalidades 📂
--   **Cadastro e Autenticação de Usuários**:
+-   **Cadastro e Autenticação de Usuários 🔒**:
     -   Os usuários podem se cadastrar e fazer login para obter um **token JWT**, que será utilizado para autenticar as requisições subsequentes.
     -   O sistema diferencia **administradores** (que podem manipular produtos) e **clientes** (que podem apenas visualizar produtos e realizar compras).
 
--   **Gestão de Clientes**:
+-   **Gestão de Clientes 🪪**:
     -   Os administradores podem **adicionar, editar, listar e excluir clientes**, com dados como nome, CPF e informações de contato.
     -   Cada cliente possui um histórico de **vendas realizadas**, permitindo que seja possível visualizar suas compras anteriores.
    
-- **Gestão de Produtos**:
+- **Gestão de Produtos 📊**:
     
     -   Os administradores podem **criar, editar e excluir produtos**, incluindo detalhes como nome, descrição e preço.
     -   A exclusão de produtos é feita de forma **lógica (soft delete)**, ou seja, os produtos são apenas marcados como removidos, mas não apagados do banco de dados.
 
--   **Gestão de Vendas**:
+-   **Gestão de Vendas 🛒**:
     -   **Clientes autenticados** podem realizar **compras**, associando um produto a sua conta, especificando a quantidade e o valor total da compra.
     -   As vendas são registradas, incluindo o **cliente, produto, quantidade, preço unitário, preço total e data/hora** da compra.
     -   **Relatórios de vendas** podem ser acessados, permitindo a visualização das compras feitas por um cliente, com a possibilidade de aplicar filtros por mês e ano.
@@ -33,6 +33,9 @@ Bem-vindo ao **EasyBuy**! Esta aplicação é um **sistema de gestão de vendas*
 -   **Node.js e npm**: Para o desenvolvimento e execução da api.
 -	**MySQL**: Como servidor de banco de dados e armazenamento da aplicação
 -   **Docker e Docker Compose** (Opcional): Para executar o projeto em contêineres.
+
+### Variáveis de ambiente 👾
+Caso não possua um arquivo com as configurações das variáveis de ambiente, renomeie o arquivo `.env.example` apenas para `.env`, ou crie um novo e copie as variáveis do arquivo `.env.example` para o arquivo que você acabou de criar e configure de acordo com suas necessidades para o projeto.
 
 ### Para configuração com docker 🐋
 Assegure-se que a engine do [Docker](https://docs.docker.com/get-started/get-docker/) está instalada e ativa na sua máquina e rode o comando: 
